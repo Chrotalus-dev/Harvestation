@@ -12,3 +12,11 @@ export const getCrops = ()=> async(dispatch)=>{
     
 }
 
+export const createCrop = (crop) => async(dispatch)=> {
+    try {
+        const { data } = await api.createCrop(crop);
+        dispatch ({type:'CREATE', payload:data});
+    } catch (error) {
+        console.log(error.message);
+    }
+}
