@@ -9,11 +9,11 @@ export const getCrops = async (req, res) => {
       res.status(404).json({message:error.message})
   }
 }
-export const createCrops = (req, res) => {
+export const createCrops = async (req, res) => {
   const crop = req.body;
   const newCrop = new PostCrop(crop);
   try {
-      newCrop.save();
+    await newCrop.save();
       res.status(201).json(newCrop);
       
   } catch (error) {
