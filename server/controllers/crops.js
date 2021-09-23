@@ -1,3 +1,4 @@
+import mongoose  from 'mongoose';
 import PostCrop from "../models/postCrop.js";
 
 export const getCrops = async (req, res) => {
@@ -9,7 +10,7 @@ export const getCrops = async (req, res) => {
       res.status(404).json({message:error.message})
   }
 }
-export const createCrops = async (req, res) => {
+export const createCrop = async (req, res) => {
   const crop = req.body;
   const newCrop = new PostCrop(crop);
   try {
@@ -20,3 +21,14 @@ export const createCrops = async (req, res) => {
       res.status(409).json({message:error.message});
   }
 }
+export const updateCrop = async (req, res) => {
+  const {id:_id} = req.params;
+  const crop = req.body;
+  if(!mongoose.Types.ObjectId.isValid(_id)) return res.status(404).send('No crop with that id');
+  
+  const updatedCrop = await PostCrop.findByIdAndUpdate(_id,crop,{new:true});
+
+  res.json(updatedCrop);
+ 
+}
+

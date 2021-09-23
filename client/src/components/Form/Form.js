@@ -1,21 +1,41 @@
-import React, {useState} from "react";
+import React, {useState,useEffect} from "react";
 import { TextField, Button, Typography, Paper } from "@material-ui/core";
 import useStyles from "./styles";
-import {createCrop} from '../../actions/crops';
-import {useDispatch} from 'react-redux';
+import {createCrop, updateCrop} from '../../actions/crops';
+import {useDispatch,useSelector} from 'react-redux';
 import FileBase from 'react-file-base64';
-const Form = () => {
+
+
+const Form = ({currentId, setCurrentId}) => {
   const [cropData,setCropData]=useState({
-      crop_name:'',description:'',creator:'',instructions:'',selectedFile:''
+      crop_name:'',description:'',creator:'',instructions:'',tags:'',selectedFile:''
   });
+  const crop = useSelector((state)=>currentId? state.crops.find((p)=>p._id===currentId):null);
   const classes = useStyles();
   const dispatch= useDispatch();
+
+  useEffect(()=>{
+    if(crop) setCropData(crop);
+    
+  },[crop])
+
   const handleSubmit = (e) => {
         e.preventDefault();
-        dispatch(createCrop(cropData));
+
+        if(currentId){
+          dispatch(updateCrop(currentId, cropData));
+
+        }
+        else{
+          dispatch(createCrop(cropData));
+        }
+        
 
   };
-  const clear =()=>{};
+  const clear =()=>{
+        
+
+  };
   return (
     <Paper className={classes.paper}>
       <form
@@ -32,7 +52,7 @@ const Form = () => {
             <FileBase type="file" multiple={false} onDone={({base64})=>setCropData({...cropData, selectedFile: base64})} ></FileBase>
         </div>
         <Button className={classes.buttonSubmit} variant="contained" color="primary" size="large" type="submit" fullWidth>Submit</Button>
-        <Button variant="contained" color="secondary" size="small" onClick={clear} type="submit" fullWidth>Clear</Button>
+        <Button variant="contained" color="secondary" size="small" onClick={clear} fullWidth>Clear</Button>
       </form>
     </Paper>
   );
