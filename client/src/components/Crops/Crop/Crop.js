@@ -1,22 +1,22 @@
 import React from 'react';
-import {Card, CardActions, CardContent,CardMedia, Button, Typography} from '@material-ui/core';
-import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
+import {Card, CardActions, CardContent,CardMedia, Button, Typography,Checkbox} from '@material-ui/core';
 import DeleteIcon  from '@material-ui/icons/Delete';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import moment from 'moment';
 
 import useStyles from './styles';
 
-const Crop =({crop}) => {
+const Crop =({crop, setCurrentId}) => {
     const classes = useStyles();
     return(
         <Card className={classes.card}>
             <CardMedia className={classes.media} image={crop.selectedFile} cropName={crop.crop_name}/>
             <div className={classes.overlay}>
-                <Typography variant="h6">{moment(crop.creator).fromNow()}</Typography>
+                <Typography variant="body2">{moment(crop.createdAt).fromNow()}</Typography>
+                <Typography variant="h5" className={classes.title} gutterTop>{crop.crop_name}</Typography>
             </div>
             <div className={classes.overlay2}>
-                <Button style={{color:'green'}} size="small" onClick={()=>{}}>
+                <Button style={{color:'purple'}} size="small" onClick={()=>setCurrentId(crop._id)}>
                     <MoreHorizIcon fontSize="default"/>
                 </Button>
 
@@ -25,7 +25,15 @@ const Crop =({crop}) => {
             <div className={classes.details}>
                 
             </div>
-        
+            <CardContent>
+                 <Typography className={classes.title} variant="h5" gutterBottom>{crop.description}</Typography>
+            </CardContent>
+            <CardActions className={classes.CardActions}>
+                <Button size="small" color="primary" onClick={()=> {}}>
+                    <DeleteIcon fontSize="small"/>
+                    Delete
+                </Button>
+            </CardActions>
         </Card>
     )
 }

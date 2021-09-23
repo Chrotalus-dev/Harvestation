@@ -5,7 +5,29 @@ const cropSchema = mongoose.Schema({
     description:String,
     creator: String,
     instructions: String,
-    selectedFile:String
+    tags:[String],
+    selectedFile:String,
+    startProject:{
+        type:Boolean,
+        default:false
+    },
+    startSeedsIndoorsby:{
+        type:Date,
+        default:new Date()
+    },
+    plantSeedlingsOutdoorsby:{
+        type:Date,
+        default:new Date()
+    },
+    Outdoors_by_Start_Seeds_Outdoors_by:{
+        type:Date,
+        default:new Date()
+    },
+    createdAt:{
+        type:Date,
+        default:new Date()
+    }
+
 //     instructions:[String],
 //     spread:{
 //         type: Number,
