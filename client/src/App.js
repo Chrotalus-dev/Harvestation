@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import ReactDOM from "react-dom";
+// import ReactDOM from "react-dom";
 import { Container, AppBar, Typography, Grow, Grid } from "@material-ui/core";
 import { useDispatch} from 'react-redux';
 
@@ -16,19 +16,19 @@ const App = () => {
    
     useEffect(()=>{
       dispatch(getCrops());
-    },[dispatch]);
+    },[currentId,dispatch]);
 
   return (
     <Container maxidth="lg">
       <AppBar className={classes.appBar} position="static" color="inherit">
-        <Typography className={classes.heading} variant="h2" align="center">
+        <Typography className={classes.heading} variant="h4" align="center">
           Harvestation
         </Typography>
         <img className={classes.image} src={cropbanner} alt="banner" height="60" />
       </AppBar>
       <Grow in>
         <Container>
-          <Grid container
+          <Grid className={classes.mainContainer} container 
             justifyContent="space-between"
             alignItems="stretch"
             spacing={3}>
