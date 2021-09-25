@@ -24,18 +24,24 @@ const Form = ({currentId, setCurrentId}) => {
 
         if(currentId){
           dispatch(updateCrop(currentId, cropData));
+          
 
         }
         else{
           dispatch(createCrop(cropData));
+          
         }
-        
+        clear();
 
-  };
+  }
   const clear =()=>{
+    setCurrentId(null);
+    setCropData({
+      crop_name:'',description:'',creator:'',instructions:'',tags:'',selectedFile:''
+  });
         
 
-  };
+  }
   return (
     <Paper className={classes.paper}>
       <form
@@ -43,7 +49,7 @@ const Form = ({currentId, setCurrentId}) => {
         noValidate
         className={`${classes.form} ${classes.root}`}
         onSubmit={handleSubmit}>
-        <Typography varian="h6">Creating a crop</Typography>
+        <Typography varian="h6">{currentId ? 'Editing':'Creating'} a Crop</Typography>
         <TextField name="creator" variant="outlined" label="Creator" fullWidth  value={cropData.creator}onChange={(e)=>setCropData({...cropData, creator:e.target.value})}></TextField>
         <TextField name="crop_name" variant="outlined" label="Crop Name" fullWidth  value={cropData.crop_name}onChange={(e)=>setCropData({...cropData, crop_name:e.target.value})}></TextField>
         <TextField name="description" variant="outlined" label="Description" fullWidth  value={cropData.description}onChange={(e)=>setCropData({...cropData, description:e.target.value})}></TextField>

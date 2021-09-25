@@ -1,5 +1,7 @@
 export default (crops=[], action) =>{
     switch(action.type){
+        case 'DELETE':
+            return crops.filter((crop)=> crop._id !== action.payload);
         case 'FETCH_ALL':
             return action.payload;
         case 'CREATE':

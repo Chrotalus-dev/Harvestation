@@ -26,9 +26,20 @@ export const updateCrop = async (req, res) => {
   const crop = req.body;
   if(!mongoose.Types.ObjectId.isValid(_id)) return res.status(404).send('No crop with that id');
   
-  const updatedCrop = await PostCrop.findByIdAndUpdate(_id,crop,{new:true});
+  const updatedCrop = await PostCrop.findByIdAndUpdate(_id,{...crop,_id},{new:true});
 
   res.json(updatedCrop);
  
+}
+
+export const deleteCrop = async(req,res)=>{
+  const {id} = req.params;
+  console.log('DELETE!');
+  if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send('No crop with that id');
+    await PostCrop.findByIdAndRemove(id);
+    res.json({message:'Crop deleted successfully'});
+  
+
+
 }
 
