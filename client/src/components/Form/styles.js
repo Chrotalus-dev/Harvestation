@@ -21,4 +21,11 @@ export default makeStyles((theme) => ({
   buttonSubmit: {
     marginBottom: 10,
   },
+  timestampsContainer: {
+    width: '100%'
+  },
+  timestampsContainerHide: {
+    width: '100%',
+    display: 'none'
+  }
 }));
