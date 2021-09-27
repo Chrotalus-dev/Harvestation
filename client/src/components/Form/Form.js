@@ -6,14 +6,15 @@ import {
   Paper,
   Checkbox,
   Container,
+  CircularProgress,
 } from "@material-ui/core";
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
+
+import { MuiPickersUtilsProvider, DatePicker } from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
 import useStyles from "./styles";
 import { createCrop, updateCrop } from "../../actions/crops";
 import { useDispatch, useSelector } from "react-redux";
 import FileBase from "react-file-base64";
-
 const Form = ({ currentId, setCurrentId }) => {
   const [cropData, setCropData] = useState({
     crop_name: "",
@@ -29,13 +30,16 @@ const Form = ({ currentId, setCurrentId }) => {
     createdAt: new Date(),
     growing_days: 0,
     harvestDate: new Date(),
+    todaysDate: new Date(),
   });
   const crop = useSelector((state) =>
     currentId ? state.crops.find((p) => p._id === currentId) : null
   );
   const classes = useStyles();
   const dispatch = useDispatch();
-  
+
+  const [growingDaysValidated, setGrowingDaysValidated] = useState(true);
+
   useEffect(() => {
     if (crop) setCropData(crop);
   }, [crop]);
@@ -51,11 +55,69 @@ const Form = ({ currentId, setCurrentId }) => {
     clear();
   };
 
-  // const activate = (active) => {
-  //   setCropData({
-  //     startProject: !active,
-  //   })
-  // }
+  // const isSameAsCurrentDate = (date) => {
+  //   const cropDate = new Date(date);
+  //   let sameDate = true;
+
+  //   let today = new Date();
+
+  //   if (cropDate.getMonth() !== today.getMonth()) {
+  //     sameDate = false;
+  //   } else if (cropDate.getDay() !== today.getDay()) {
+  //     sameDate = false;
+  //   } else if (cropDate.getFullYear() !== today.getFullYear()) {
+  //     sameDate = false;
+  //   }
+
+  //   return sameDate;
+  // };
+
+  // const dateMatchNotification = (crop) => {
+  //   let notificationMessage = `All Notifications for ${crop.crop_name}\n\n`;
+
+  //   let messageCount = 0;
+
+  //   if (isSameAsCurrentDate(crop.startSeedsIndoorsby)) {
+  //     messageCount++;
+  //     notificationMessage += `NOTIFICATION ${messageCount}: Today, the activity for ${crop.crop_name} is planting seeds indoors.\n\n`;
+  //   }
+
+  //   if (isSameAsCurrentDate(crop.plantSeedlingsOutdoorsby)) {
+  //     messageCount++;
+  //     notificationMessage += `NOTIFICATION ${messageCount}: Today, the activity for ${crop.crop_name} is planting seedlings outdoors.\n\n`;
+  //   }
+
+  //   if (isSameAsCurrentDate(crop.Outdoors_by_Start_Seeds_Outdoors_by)) {
+  //     messageCount++;
+  //     notificationMessage += `NOTIFICATION ${messageCount}: Today, the activity for ${crop.crop_name} is planting seeds outdoors.\n\n`;
+  //   }
+
+  //   if (isSameAsCurrentDate(crop.harvestDate)) {
+  //     messageCount++;
+  //     notificationMessage += `NOTIFICATION ${messageCount}: Today, the activity for ${crop.crop_name} is harvesting.\n\n`;
+  //   }
+
+  //   if (messageCount > 0) {
+  //     window.alert(notificationMessage);
+  //   }
+  // };
+
+  // useSelector((state) => {
+  //   if (isSameAsCurrentDate(cropData.todaysDate)) {
+  //     state.crops.forEach((crop) => {
+  //       dateMatchNotification(crop);
+  //     });
+  //   }
+  // });
+
+  const validateGrowingDaysInput = (value) => {
+    let validated = true;
+    if (isNaN(value)) {
+      validated = false;
+    }
+    setGrowingDaysValidated(validated);
+    return validated;
+  };
 
   const clear = () => {
     setCurrentId(null);
@@ -73,6 +135,7 @@ const Form = ({ currentId, setCurrentId }) => {
       createdAt: new Date(),
       growing_days: 0,
       harvestDate: new Date(),
+      todaysDate: new Date(),
     });
   };
   return (
@@ -125,32 +188,77 @@ const Form = ({ currentId, setCurrentId }) => {
           label="Active Project?"
           name="activate_project"
           variant="outlined"
-          label="Activate project?"
           value={cropData.startProject}
-          checked = {cropData.startProject}
+          checked={cropData.startProject}
           onChange={() => {
-            setCropData({ ...cropData, startProject: !cropData.startProject })
-          }
-        }
+            setCropData({ ...cropData, startProject: !cropData.startProject });
+          }}
         />
-        <Container className = {currentId ? classes.timestampsContainer : classes.timestampsContainerHide}>
+        <Container
+          className={
+            currentId && cropData.startProject
+              ? classes.timestampsContainer
+              : classes.timestampsContainerHide
+          }>
           <div>
-            <TextField label="Start Seeds Indoors by" variant="outlined"
-              value={new Date(cropData.startSeedsIndoorsby).toDateString()}
-              onChange={(e)=>setCropData({...cropData,startSeedsIndoorsby: e.target.value})}
-              ></TextField>
-            <br></br>
-            <TextField label="Plant Seedlings Outdoor by" variant="outlined"
-              value={new Date(cropData.plantSeedlingsOutdoorsby).toDateString()}
-              readOnly></TextField>
-            <br></br>
-            <TextField label="Start Seeds Outdoors by" variant="outlined"
-              value={new Date(cropData.Outdoors_by_Start_Seeds_Outdoors_by).toDateString()}
-              readOnly></TextField>
-            <br></br>
-            <TextField label="Growing Days" variant="outlined" value={cropData.growing_days} readOnly></TextField>
-            <br></br>
-            <TextField label="Harvest Date" variant="outlined" value={new Date(cropData.harvestDate).toDateString()} readOnly></TextField>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <DatePicker
+                format="MMMM dd, yyyy"
+                label="Start Seeds Indoors by"
+                variant="outlined"
+                value={cropData.startSeedsIndoorsby}
+                onChange={(e) => {
+                  setCropData({ ...cropData, startSeedsIndoorsby: e });
+                }}></DatePicker>
+              <br></br>
+              <DatePicker
+                format="MMMM dd, yyyy"
+                label="Plant Seedlings Outdoor by"
+                variant="outlined"
+                value={cropData.plantSeedlingsOutdoorsby}
+                onChange={(e) => {
+                  setCropData({ ...cropData, plantSeedlingsOutdoorsby: e });
+                }}></DatePicker>
+              <br></br>
+              <DatePicker
+                format="MMMM dd, yyyy"
+                label="Start Seeds Outdoors by"
+                variant="outlined"
+                value={cropData.Outdoors_by_Start_Seeds_Outdoors_by}
+                onChange={(e) => {
+                  setCropData({
+                    ...cropData,
+                    Outdoors_by_Start_Seeds_Outdoors_by: e,
+                  });
+                }}></DatePicker>
+              <br></br>
+              <TextField
+                label="Growing Days"
+                variant="outlined"
+                error= {!growingDaysValidated}
+                helperText = {!growingDaysValidated ? 'Please enter a valid number' : ''}
+                value={cropData.growing_days}
+                onChange={(e) => {
+                  if (validateGrowingDaysInput(e.target.value)) {
+                    setCropData({
+                      ...cropData,
+                      growing_days: e.target.value,
+                    });
+                  }
+                }}></TextField>
+              <br></br>
+              <DatePicker
+                format="MMMM dd, yyyy"
+                label="Harvest Date"
+                variant="outlined"
+                value={new Date(cropData.harvestDate).toDateString()}
+                onChange={(e) => {
+                  setCropData({
+                    ...cropData,
+                    harvestDate: e,
+                  });
+                }}></DatePicker>
+            </MuiPickersUtilsProvider>
           </div>
         </Container>
         <div className={classes.fileInput}>
@@ -158,7 +266,9 @@ const Form = ({ currentId, setCurrentId }) => {
             type="file"
             multiple={false}
             onDone={({ base64 }) =>
-              setCropData({ ...cropData, selectedFile: base64 })
+              base64
+                ? setCropData({ ...cropData, selectedFile: base64 })
+                : "https://picsum.photos/200/300"
             }></FileBase>
         </div>
         <Button
