@@ -5,10 +5,9 @@ import {
   Typography,
   Paper,
   Checkbox,
-  Container,
-  CircularProgress,
+  Container  
 } from "@material-ui/core";
-
+import {alpha} from '@material-ui/core/styles'
 import { MuiPickersUtilsProvider, DatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import useStyles from "./styles";
