@@ -5,15 +5,16 @@ import {
   Typography,
   Paper,
   Checkbox,
-  Container  
+  Container,
 } from "@material-ui/core";
-import {alpha} from '@material-ui/core/styles'
+import { alpha } from "@material-ui/core/styles";
 import { MuiPickersUtilsProvider, DatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import useStyles from "./styles";
 import { createCrop, updateCrop } from "../../actions/crops";
 import { useDispatch, useSelector } from "react-redux";
 import FileBase from "react-file-base64";
+import { set } from "date-fns";
 const Form = ({ currentId, setCurrentId }) => {
   const [cropData, setCropData] = useState({
     crop_name: "",
@@ -38,6 +39,10 @@ const Form = ({ currentId, setCurrentId }) => {
   const dispatch = useDispatch();
 
   const [growingDaysValidated, setGrowingDaysValidated] = useState(true);
+  const [selectedDatesIndoorSeedsValidated, setSelectedDaysIndoorSeedsValidated] = useState(true);
+  const [selectedDatesIndoorSeedlingsValidated, setSelectedDaysIndoorSeedlingsValidated] = useState(true);
+  const [selectedDatesOutdoorSeedsValidated, setSelectedDaysOutdoorSeedsValidated] = useState(true);
+  const [selectedDatesHarvestValidated, setSelectedDaysHarvestValidated] = useState(true);
 
   useEffect(() => {
     if (crop) setCropData(crop);
@@ -54,22 +59,21 @@ const Form = ({ currentId, setCurrentId }) => {
     clear();
   };
 
-  // const isSameAsCurrentDate = (date) => {
-  //   const cropDate = new Date(date);
-  //   let sameDate = true;
+  const onOrAfterCurrentDate = (date) => {
+    const cropDate = new Date(date);
+    let sameDate = true;
 
-  //   let today = new Date();
+    let today = new Date();
 
-  //   if (cropDate.getMonth() !== today.getMonth()) {
-  //     sameDate = false;
-  //   } else if (cropDate.getDay() !== today.getDay()) {
-  //     sameDate = false;
-  //   } else if (cropDate.getFullYear() !== today.getFullYear()) {
-  //     sameDate = false;
-  //   }
-
-  //   return sameDate;
-  // };
+    if (cropDate.getFullYear() < today.getFullYear()) {
+      sameDate = false;
+    } else if (cropDate.getMonth() < today.getMonth()) {
+      sameDate = false;
+    } else if (cropDate.getDay() < today.getDay()) {
+      sameDate = false;
+    }
+    return sameDate;
+  };
 
   // const dateMatchNotification = (crop) => {
   //   let notificationMessage = `All Notifications for ${crop.crop_name}\n\n`;
@@ -109,6 +113,29 @@ const Form = ({ currentId, setCurrentId }) => {
   //   }
   // });
 
+  const validateSelectedDateIndoorSeeds = (value) => {
+    const validated = onOrAfterCurrentDate(value);
+    setSelectedDaysIndoorSeedsValidated(validated);
+    return validated;
+  };
+  const validateSelectedDateIndoorSeedlings = (value) => {
+    const validated = onOrAfterCurrentDate(value);
+    setSelectedDaysIndoorSeedlingsValidated(validated);
+    return validated;
+  };
+  const validateSelectedDateOutdoorSeeds = (value) => {
+    const validated = onOrAfterCurrentDate(value);
+    setSelectedDaysOutdoorSeedsValidated(validated);
+    return validated;
+  };
+  const validateSelectedDateHarvest = (value) => {
+    const validated = onOrAfterCurrentDate(value);
+    setSelectedDaysHarvestValidated(validated);
+    return validated;
+  };
+
+
+
   const validateGrowingDaysInput = (value) => {
     let validated = true;
     if (isNaN(value)) {
@@ -120,6 +147,11 @@ const Form = ({ currentId, setCurrentId }) => {
 
   const clear = () => {
     setCurrentId(null);
+    setGrowingDaysValidated(true);
+    setSelectedDaysIndoorSeedsValidated(true);
+    setSelectedDaysIndoorSeedlingsValidated(true);
+    setSelectedDaysOutdoorSeedsValidated(true);
+    setSelectedDaysHarvestValidated(true);
     setCropData({
       crop_name: "",
       description: "",
@@ -205,37 +237,63 @@ const Form = ({ currentId, setCurrentId }) => {
                 format="MMMM dd, yyyy"
                 label="Start Seeds Indoors by"
                 variant="outlined"
+                error={!selectedDatesIndoorSeedsValidated}
+                helperText={
+                  !selectedDatesIndoorSeedsValidated
+                    ? "Please select today's date or a date after today's date"
+                    : ""
+                }
                 value={cropData.startSeedsIndoorsby}
                 onChange={(e) => {
-                  setCropData({ ...cropData, startSeedsIndoorsby: e });
+                  if (validateSelectedDateIndoorSeeds(e)) {
+                    setCropData({ ...cropData, startSeedsIndoorsby: e });
+                  }
                 }}></DatePicker>
               <br></br>
               <DatePicker
                 format="MMMM dd, yyyy"
                 label="Plant Seedlings Outdoor by"
                 variant="outlined"
+                error={!selectedDatesIndoorSeedlingsValidated}
+                helperText={
+                  !selectedDatesIndoorSeedlingsValidated
+                  ? "Please select today's date or a date after today's date"
+                    : ""
+                }
                 value={cropData.plantSeedlingsOutdoorsby}
                 onChange={(e) => {
-                  setCropData({ ...cropData, plantSeedlingsOutdoorsby: e });
+                  if (validateSelectedDateIndoorSeedlings(e)) {
+                    setCropData({ ...cropData, plantSeedlingsOutdoorsby: e });
+                  }
                 }}></DatePicker>
               <br></br>
               <DatePicker
                 format="MMMM dd, yyyy"
                 label="Start Seeds Outdoors by"
                 variant="outlined"
+                error={!selectedDatesOutdoorSeedsValidated}
+                helperText={
+                  !selectedDatesOutdoorSeedsValidated
+                  ? "Please select today's date or a date after today's date"
+                    : ""
+                }
                 value={cropData.Outdoors_by_Start_Seeds_Outdoors_by}
                 onChange={(e) => {
-                  setCropData({
-                    ...cropData,
-                    Outdoors_by_Start_Seeds_Outdoors_by: e,
-                  });
+                  if (validateSelectedDateOutdoorSeeds(e)) {
+                    setCropData({
+                      ...cropData,
+                      Outdoors_by_Start_Seeds_Outdoors_by: e,
+                    });
+                  }
                 }}></DatePicker>
               <br></br>
               <TextField
                 label="Growing Days"
                 variant="outlined"
-                error= {!growingDaysValidated}
-                helperText = {!growingDaysValidated ? 'Please enter a valid number' : ''}
+                error={!growingDaysValidated}
+                helperText={
+                  !growingDaysValidated ? "Please enter a valid number" : ""
+                }
                 value={cropData.growing_days}
                 onChange={(e) => {
                   if (validateGrowingDaysInput(e.target.value)) {
@@ -250,12 +308,20 @@ const Form = ({ currentId, setCurrentId }) => {
                 format="MMMM dd, yyyy"
                 label="Harvest Date"
                 variant="outlined"
+                error={!selectedDatesHarvestValidated}
+                helperText={
+                  !selectedDatesHarvestValidated
+                  ? "Please select today's date or a date after today's date"
+                    : ""
+                }
                 value={new Date(cropData.harvestDate).toDateString()}
                 onChange={(e) => {
-                  setCropData({
-                    ...cropData,
-                    harvestDate: e,
-                  });
+                  if (validateSelectedDateHarvest(e)) {
+                    setCropData({
+                      ...cropData,
+                      harvestDate: e,
+                    });
+                  }
                 }}></DatePicker>
             </MuiPickersUtilsProvider>
           </div>
