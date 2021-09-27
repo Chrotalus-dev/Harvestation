@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from "react";
 import { Container, AppBar, Typography, Grow, Grid } from "@material-ui/core";
 import { useDispatch} from 'react-redux';
-
 import {getCrops} from './actions/crops';
 import cropbanner from "../src/images/sven-scheuermeier-4R1YpmGO52I-unsplash.jpg";
 import Crops from './components/Crops/Crops';
