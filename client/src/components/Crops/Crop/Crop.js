@@ -31,7 +31,7 @@ const Crop = ({ crop, setCurrentId }) => {
     <Card className={classes.card}>
       <CardMedia
         className={classes.media}
-        image={crop.selectedFile}
+        image={crop.selectedFile ? crop.selectedFile : 'https://picsum.photos/200/300'} 
         title={crop.crop_name}
       />
       <div className={classes.overlay}>

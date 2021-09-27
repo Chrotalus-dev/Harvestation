@@ -7,9 +7,9 @@ import useStyles from './styles';
 const Crops =({setCurrentId}) => {
     const crops = useSelector((state)=>state.crops);
     const classes = useStyles();
-    console.log (crops);
+    
     return(
-        !crops.length ? <CircularProgress />:(
+        
             <Grid className={classes.container} container alignItems="stretch" spacing={3}>
                 {crops.map((crop)=>(
                 
@@ -17,7 +17,7 @@ const Crops =({setCurrentId}) => {
                     <Crop crop={crop} setCurrentId={setCurrentId}/>
                 </Grid>))}
             </Grid>
-    )
+    
     );
 }
 
